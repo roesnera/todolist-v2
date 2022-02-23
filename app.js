@@ -154,34 +154,6 @@ app.get("/:listName", function (req, res) {
   });
 });
 
-// app.post("/:listName", function(req, res){
-
-//   const customListName = _.startCase(_.toLower(req.params.listName))
-
-//   const newItem = new Item({
-//     name: req.body.newItem
-//   })
-
-//   console.log(newItem);
-
-//   let itemsInList = List.findOne({name: customListName}, function(err, foundItems){
-//     if(err){
-//       console.log(err)
-//     } else {
-//       console.log('Successfully found custom list!')
-//     }
-//   }).items
-
-//   console.log("itemsInList before push: \n" + itemsInList)
-
-//   itemsInList.push(newItem)
-//   console.log("itemsInList after push: \n"+itemsInList);
-
-//   List.updateOne({name: customListName}, {items: itemsInList});
-
-//   res.redirect('/'+customListName);
-// })
-
 app.get("/about", function (req, res) {
   res.render("about");
 });
