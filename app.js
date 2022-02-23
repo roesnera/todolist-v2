@@ -78,7 +78,7 @@ app.post("/", function (req, res) {
   const newItem = new Item({
     name: itemName,
   });
-
+  try{
   if(listName === "Today"){
 
     newItem.save();
@@ -92,6 +92,14 @@ app.post("/", function (req, res) {
       res.redirect('/'+listName);
     })
   }
+} catch(err){
+  console.log('invalid input')
+  if(listName == "Today"){
+    res.redirect('/')
+  } else {
+    res.redirect('/'+listName)
+  }
+}
 });
 
 app.post("/delete/", function (req, res) {
