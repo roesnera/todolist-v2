@@ -6,6 +6,12 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const _ = require('lodash');
 
+// imports from env the mongo password, WILL NOT WORK for deployment!
+const mongopwd = process.env.MONGOPWD;
+
+// failed import statement because this isn't a module
+// import { mongopwd } from "./creds";
+
 // instantiates our server
 const app = express();
 
@@ -17,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // connects to our moongo db using mongoose, using the todolistDB
-mongoose.connect("mongodb://localhost:27017/todolistDB");
+mongoose.connect("mongodb+srv://aaroe:"+mongopwd+"@cluster0.knf12.mongodb.net/todolistDB?retryWrites=true&w=majority");
 
 // creates scheme for our items
 const itemSchema = new mongoose.Schema({
@@ -60,6 +66,8 @@ const List = mongoose.model("List", listSchema);
 // get mapping for our root route
 app.get("/", function (req, res) {
 
+  console.log('made get request to /')
+
   // returns all items in our Items collection, if none then loads and saves defaultItems
   Item.find({}, function (err, found) {
     if (err) {
@@ -85,6 +93,7 @@ app.get("/", function (req, res) {
 
 // post mapping for all list routes, root and niche.  Redirects to route based on request body "list" value
 app.post("/", function (req, res) {
+  console.log('made post request to /')
   const itemName = req.body.newItem;
   const listName = req.body.list;
 
@@ -118,6 +127,7 @@ app.post("/", function (req, res) {
 
 // post mapping for all delete button requests. Removes item with id equal to request body "checkbox" value from collection or list specified by request body "listName" value and redirects based on same value.
 app.post("/delete/", function (req, res) {
+  console.log('made delete request to /delete/');
   console.log(req.body.checkbox);
   let itemToDelete = req.body.checkbox;
   let listTitle = req.body.listName;
@@ -145,11 +155,15 @@ app.post("/delete/", function (req, res) {
   
 });
 
+// get mapping for about route. Renders our about page.
+app.get("/about", function (req, res) {
+  res.render("about");
+});
 
 // get mapping for niche lists. Should always load some values, if new list default values, if extant then whatever is already saved. Having trouble when you delete all values but not a huge deal.
 app.get("/:listName", function (req, res) {
-
-  const customListName = _.startCase(_.toLower(req.params.listName))
+  const customListName = _.startCase(_.toLower(req.params.listName));
+  console.log('made get request to /'+customListName);
 
   if(customListName == 'Favicon Ico'){
     res.redirect('/')
@@ -180,10 +194,7 @@ app.get("/:listName", function (req, res) {
 });
 
 
-// get mapping for about route. Renders our about page.
-app.get("/about", function (req, res) {
-  res.render("about");
-});
+
 
 // starts our server.
 app.listen(3000, function () {
